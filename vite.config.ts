@@ -5,4 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  ssr: {
+    noExternal: [/@syncfusion/], // prevent the list of dependencies from being used for ssr allowing us use syncfusion components without issues
+  },
 });
