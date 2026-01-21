@@ -1,7 +1,25 @@
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import React from "react";
-import { Link } from "react-router";
-import { loginWithGoogle } from "~/appwrite/auth";
+import { Link, redirect } from "react-router";
+import { getUserData, loginWithGoogle, storeUserData } from "~/appwrite/auth";
+import { account } from "~/appwrite/client";
+
+export async function clientLoader() {
+  try {
+    const user = await account.get();
+    // if user is logged in
+    if (user.$id) {
+      const userData = await getUserData();
+      return userData?.status === "admin"
+        ? redirect("/dashboard")
+        : redirect("/");
+    }
+    return null;
+  } catch (e) {
+    console.log("Error in clientLoader:", e);
+    return null;
+  }
+}
 
 const SignIn = () => {
   return (

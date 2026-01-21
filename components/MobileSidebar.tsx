@@ -18,7 +18,7 @@ const MobileSidebar = () => {
           <h1>Travel Agency</h1>
         </Link>
 
-        <button onClick={toggleSidebar}>
+        <button onClick={toggleSidebar} className="cursor-pointer">
           <img src="assets/icons/menu.svg" alt="menu" className="size-7" />
         </button>
       </header>

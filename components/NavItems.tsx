@@ -1,14 +1,13 @@
 import React from "react";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useLoaderData, useNavigate } from "react-router";
+import { logOutUser } from "~/appwrite/auth";
 import { sidebarItems } from "~/constants";
 import { cn } from "~/lib/utils";
 
 const NavItems = ({ handleClick }: { handleClick?: () => void }) => {
-  const user = {
-    name: "John Doe",
-    email: "contact@johndoe.pro",
-    imageUrl: "/assets/images/david.webp",
-  };
+  const user = useLoaderData<User>();
+  const navigate = useNavigate();
+
   return (
     <section className="nav-items">
       <Link to="/" className="link-logo">
@@ -54,7 +53,8 @@ const NavItems = ({ handleClick }: { handleClick?: () => void }) => {
           <button
             className="cursor-pointer"
             onClick={() => {
-              console.log("Log Out");
+              logOutUser();
+              navigate("/sign-in");
             }}
           >
             <img

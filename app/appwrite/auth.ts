@@ -2,6 +2,22 @@ import { ID, OAuthProvider, Query } from "appwrite";
 import { account, appwriteConfig, databases } from "./client";
 import { redirect } from "react-router";
 
+export const getGoogleProfilePhoto = async (accessToken: string) => {
+  try {
+    const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await res.json();
+    console.log("Google Profile:", data);
+    return data.picture || null;
+  } catch (e) {
+    console.log("getGoogleProfilePhoto:", e);
+    return null;
+  }
+};
+
 export const storeUserData = async () => {
   try {
     const user = await account.get();
@@ -11,13 +27,19 @@ export const storeUserData = async () => {
     const { documents } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.userId,
-      [Query.equal("accountId", user.$id)]
+      [Query.equal("accountId", user.$id)],
     );
     if (documents.length > 0) return documents[0];
 
     // If user data does not exist, create a new document
 
     //Get google photo
+    const accessToken = await account
+      .getSession("current")
+      .then((session) => session.providerAccessToken);
+    const imageUrl = accessToken
+      ? await getGoogleProfilePhoto(accessToken)
+      : null;
 
     //create new document
     const newUser = await databases.createDocument(
@@ -28,9 +50,9 @@ export const storeUserData = async () => {
         name: user.name,
         email: user.email,
         accountId: user.$id,
-        // imageUrl:
+        imageUrl: imageUrl,
         joinedAt: new Date().toISOString(),
-      }
+      },
     );
     return newUser;
   } catch (e) {
@@ -48,13 +70,20 @@ export const getUserData = async () => {
       appwriteConfig.userId,
       [
         Query.equal("accountId", user.$id),
-        Query.select(["name", "email", "accountId", "imageUrl", "joinedAt"]),
-      ]
+        // Query.select([
+        //   "name",
+        //   "email",
+        //   "accountId",
+        //   "imageUrl",
+        //   "joinedAt",
+        //   "status",
+        // ]),
+      ],
     );
     if (documents.length === 0) await storeUserData();
     return documents.length > 0 ? documents[0] : redirect("/sign-in");
   } catch (e) {
-    console.log("getNewUser:", e);
+    console.log("getUserData:", e);
   }
 };
 
@@ -63,10 +92,19 @@ export const loginWithGoogle = async () => {
     account.createOAuth2Session(
       OAuthProvider.Google,
       "http://localhost:5173/dashboard",
-      "http://localhost:5173/sign-in"
+      "http://localhost:5173/sign-in",
     );
     console.log("loginWithGoogle: success");
   } catch (e) {
     console.log("loginWithGoogle:", e);
+  }
+};
+
+export const logOutUser = () => {
+  try {
+    account.deleteSession("current");
+    console.log("User logged out successfully");
+  } catch (e) {
+    console.log("logOutUser:", e);
   }
 };

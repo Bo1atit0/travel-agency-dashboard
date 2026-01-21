@@ -1,14 +1,16 @@
 import { Header, StatsCard, TripsCard } from "components";
-import { dashboardData, user, allTrips } from "~/constants";
+import { dashboardData, allTrips } from "~/constants";
+import { useRouteLoaderData } from "react-router";
 
 const { totalUsers, usersJoined, totalTrip, tripsCreated, userRole } =
   dashboardData;
 
 const Dashboard = () => {
+  const user = useRouteLoaderData<User>("routes/admin/admin-layout");
   return (
     <main className="dashboard wrapper ">
       <Header
-        title={`Welcome ${user.name || "Guest"} 👋`}
+        title={`Welcome ${user?.name ?? "Guest"} 👋`}
         description="Track activity, trends and popular destinations in real time"
       />
 
