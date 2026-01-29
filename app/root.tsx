@@ -6,9 +6,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import "./app.css";
+import * as Sentry from "@sentry/react-router";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -61,6 +61,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         ? "The requested page could not be found."
         : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
+    Sentry.captureException(error);
     details = error.message;
     stack = error.stack;
   }

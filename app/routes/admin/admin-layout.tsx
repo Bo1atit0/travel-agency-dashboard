@@ -19,7 +19,7 @@ export async function clientLoader() {
       const newUser = await storeUserData();
       return newUser;
     }
-    console.log("userData:", userData);
+
     return userData;
   } catch (e) {
     console.log("Error in admin-layout clientLoader:", e);

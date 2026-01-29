@@ -68,17 +68,7 @@ export const getUserData = async () => {
     const { documents } = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.userId,
-      [
-        Query.equal("accountId", user.$id),
-        // Query.select([
-        //   "name",
-        //   "email",
-        //   "accountId",
-        //   "imageUrl",
-        //   "joinedAt",
-        //   "status",
-        // ]),
-      ],
+      [Query.equal("accountId", user.$id)],
     );
     if (documents.length === 0) await storeUserData();
     return documents.length > 0 ? documents[0] : redirect("/sign-in");
@@ -106,5 +96,20 @@ export const logOutUser = () => {
     console.log("User logged out successfully");
   } catch (e) {
     console.log("logOutUser:", e);
+  }
+};
+
+export const getAllUsers = async (limit: number, offset: number) => {
+  try {
+    const { documents: users, total } = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userId,
+      [Query.limit(limit), Query.offset(offset)],
+    );
+    if (total === 0) return { users: [], total };
+    return { users, total };
+  } catch (e) {
+    console.log("Error fetching all users:", e);
+    return { users: [], total: 0 };
   }
 };

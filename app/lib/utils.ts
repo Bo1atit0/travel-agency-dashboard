@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export const calculateTrendPercentage = (
   countOfThisMonth: number,
-  countOfLastMonth: number
+  countOfLastMonth: number,
 ): TrendResult => {
   if (countOfLastMonth === 0) {
     return countOfThisMonth === 0
@@ -37,3 +37,13 @@ export const formatDate = (dateString: string): string => {
 export function getFirstWord(input: string = ""): string {
   return input.trim().split(/\s+/)[0] || "";
 }
+
+export const formatKey = (key: string): string => {
+  return (
+    key
+      // add space before capital letters
+      .replace(/([A-Z])/g, " $1")
+      // capitalize first letter
+      .replace(/^./, (char) => char.toUpperCase())
+  );
+};
