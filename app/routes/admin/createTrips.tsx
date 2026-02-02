@@ -9,7 +9,7 @@ import { Header } from "components";
 import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { account } from "~/appwrite/client";
-import { comboBoxItems, selectItems } from "~/constants";
+import { comboBoxItems, selectItems, travelStyles } from "~/constants";
 import { world_map } from "~/constants/world_map";
 import { cn, formatKey } from "~/lib/utils";
 
@@ -84,8 +84,25 @@ const createTrips = () => {
     }
     setError("");
     try {
-      console.log("User:", user);
-      console.log("Submitting Form Data:", formData);
+      const response = await fetch("/create-trip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          country: formData.country,
+          duration: formData.duration,
+          travelStyles: formData.travelStyle,
+          interests: formData.interest,
+          budget: formData.budget,
+          groupType: formData.groupType,
+          userId: user.$id,
+        }),
+      });
+      const result = await response.json();
+      if (result) {
+        console.log("Trip creation response:", result);
+      } else {
+        console.error("Trip creation failed: No result returned");
+      }
     } catch (e) {
       console.error("Error creating trip", e);
     } finally {

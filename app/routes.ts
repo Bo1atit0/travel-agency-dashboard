@@ -3,6 +3,7 @@ import path from "path";
 
 export default [
   route("/", "routes/users/home.tsx"),
+  route("/create-trip", "routes/api/create-trip.ts"),
   route("sign-in", "routes/root/sign-in.tsx"),
   layout("routes/admin/admin-layout.tsx", [
     route("dashboard", "routes/admin/dashboard.tsx"),
